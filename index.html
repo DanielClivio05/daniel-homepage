@@ -11,12 +11,21 @@
 <body>
   <header>
     <nav aria-label="Primary">
-      <ul>
+      <button
+        type="button"
+        class="nav-toggle"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Open menu"
+      >
+        <span class="nav-toggle-icon" aria-hidden="true"></span>
+      </button>
+      <ul id="nav-menu" class="nav-menu">
         <li><a href="#hero">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#skills">Skills</a></li>
         <li><a href="#experience">Experience</a></li>
-        <li><a href="projects.html">Projects</a></li>
+        <li><a href="#projects">Projects</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -80,6 +89,33 @@
       </article>
     </section>
 
+    <!-- Projects section: featured work on the homepage -->
+    <section id="projects">
+      <h2>Projects</h2>
+      <div class="projects-grid">
+        <article class="project-card">
+          <h3>Personal Homepage</h3>
+          <p>This site — built with HTML, CSS, and vanilla JS</p>
+          <p class="project-tag">HTML · CSS · JS</p>
+          <p>
+            <a href="https://github.com/DanielClivio05" rel="noopener noreferrer">GitHub</a>
+          </p>
+        </article>
+        <article class="project-card">
+          <h3>Coming Soon</h3>
+          <p>Next project in progress</p>
+          <p class="project-tag">Python</p>
+          <p><span class="project-link-disabled">GitHub</span></p>
+        </article>
+        <article class="project-card">
+          <h3>Coming Soon</h3>
+          <p>Next project in progress</p>
+          <p class="project-tag">TBD</p>
+          <p><span class="project-link-disabled">GitHub</span></p>
+        </article>
+      </div>
+    </section>
+
     <!-- Contact section: email, profiles, and résumé -->
     <section id="contact">
       <h2>Contact</h2>
@@ -102,6 +138,8 @@
       </address>
     </section>
   </main>
+
+  <button type="button" class="back-to-top" aria-label="Back to top" hidden>↑</button>
 
   <footer>
     <p><small>&copy; 2026 Daniel Clivio</small></p>

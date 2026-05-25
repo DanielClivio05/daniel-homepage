@@ -11,12 +11,21 @@
 <body>
   <header>
     <nav aria-label="Primary">
-      <ul>
+      <button
+        type="button"
+        class="nav-toggle"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+        aria-label="Open menu"
+      >
+        <span class="nav-toggle-icon" aria-hidden="true"></span>
+      </button>
+      <ul id="nav-menu" class="nav-menu">
         <li><a href="index.html#hero">Home</a></li>
         <li><a href="index.html#about">About</a></li>
         <li><a href="index.html#skills">Skills</a></li>
         <li><a href="index.html#experience">Experience</a></li>
-        <li><a href="projects.html" aria-current="page">Projects</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
         <li><a href="index.html#contact">Contact</a></li>
       </ul>
     </nav>
@@ -59,6 +68,8 @@
       </article>
     </section>
   </main>
+
+  <button type="button" class="back-to-top" aria-label="Back to top" hidden>↑</button>
 
   <footer>
     <p><small>&copy; 2026 Daniel Clivio</small></p>
