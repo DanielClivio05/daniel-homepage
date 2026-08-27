@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calibrating a ranking against someone else's — Daniel Clivio</title>
+<meta name="description" content="How I fitted StackedRoster's independent college tennis ranking to track the official ITA list: a convergence graph, a recovered points table, and why only the top 80 gets re-ranked.">
+<link rel="canonical" href="https://danielclivio05.github.io/calibration.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Calibrating a ranking against someone else's">
+<meta property="og:description" content="A convergence graph, a recovered points table, and why only the top 80 gets re-ranked.">
+<meta property="og:url" content="https://danielclivio05.github.io/calibration.html">
+<meta property="og:image" content="https://danielclivio05.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wide">
+    <a class="name" href="/">Daniel Clivio</a>
+    <nav aria-label="Primary">
+      <a href="/#projects">Projects</a>
+      <a href="calibration.html" aria-current="page">Writing</a>
+      <a href="https://github.com/DanielClivio05">GitHub</a>
+      <a href="https://www.linkedin.com/in/daniel-clivio">LinkedIn</a>
+      <a href="assets/Daniel-Clivio-Resume.pdf">Résumé</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <p class="eyebrow">Writing · August 2026</p>
+  <h1>Calibrating a ranking against someone else's</h1>
+  <p class="lede" style="margin-top:0.9rem">
+    <a href="https://stackedroster.net">StackedRoster</a> computes its own ranking for Division I
+    college tennis and is supposed to track the official ITA list closely without copying it. Those
+    two goals pull against each other, and most of the engineering lives in that tension.
+  </p>
+
+  <p>
+    The ITA publishes a weekly ranking and, alongside it, a points total for each player. It does not
+    publish the function that produced those points. So the problem isn't ranking players — it's
+    ranking them in a way that lands close to a target I can see the output of but not the mechanism
+    behind, using only data that will still exist next Tuesday when the job runs unattended.
+  </p>
+  <p>
+    What shipped is two stages. The first ranks everybody. The second re-ranks the part that matters
+    most, and exists only because the first one wasn't good enough at the top.
+  </p>
+
+  <h2>Stage one: a convergence graph</h2>
+
+  <p>
+    Every match result is an edge. A player's score is the sum of their ten best win points, divided
+    by a calibrated base plus the weight of their losses. The ten-win cap isn't my invention — the
+    ITA documents it — and it makes the score a quality average rather than a volume total, so
+    someone with four elite wins can outrank someone with twenty ordinary ones.
+  </p>
+
+  <div class="note">
+    <p>
+      score = (your ten best win points) ÷ (calibrated base + weighted losses)
+    </p>
+  </div>
+
+  <p>
+    The circularity is the point. A win is worth the opponent's score from the previous iteration, so
+    every score depends on every other score, and the whole thing has to be iterated until it settles
+    — in practice until no score moves by more than 0.001. Each pass is normalised to a mean of one,
+    because the raw map is a contraction and without renormalisation the entire table drifts toward
+    zero.
+  </p>
+  <p>
+    Two smaller weights matter more than I expected. Losing to a much weaker opponent costs slightly
+    more than losing to a peer, which stops a strong record being assembled out of avoided risk. And
+    a road win is worth a bit more than a home one. Walkovers are dropped entirely; retirements,
+    defaults and injuries are kept, because those are matches that happened.
+  </p>
+
+  <h2>Where it wasn't enough</h2>
+
+  <p>
+    The graph is respectable everywhere and slightly soft exactly where people look. Measured against
+    two pinned ITA lists — I froze the 30 April and 20 May 2026 publications so I'd have a stationary
+    target — the raw graph sat around three places off through the top 25 and five through the top 50.
+    For a ranking whose entire claim is that it tracks the official one, being five places out inside
+    the top 50 is the difference between interesting and useful.
+  </p>
+
+  <h2>Stage two: recovering a points table</h2>
+
+  <p>
+    The ITA's published points total is the one field that leaks information about their model. So I
+    fitted a points table against it: a player's predicted points are the sum, over their wins, of a
+    band value based on how highly ranked the opponent was, plus a bonus for beating someone ranked
+    above them, plus a flat term per loss. Fourteen opponent bands, finer at the top where a single
+    place matters more, and five upset bands.
+  </p>
+
+  <p>
+    The trap here took me a while to see. The obvious thing is to fit using the ITA's own opponent
+    ranks, which produces a much better fit — and a model that cannot run. The ITA's opponent ranks
+    aren't available live, so a model that depends on them can only ever be evaluated retrospectively
+    against the thing it's trying to predict. It's circular in a way that flatters the numbers and
+    ships nothing. The fitted coefficients are therefore fitted on <em>my</em> converged opponent
+    ranks, which is worse on paper and is the only version that can actually run on a Tuesday.
+  </p>
+
+  <h2>Why only the top eighty</h2>
+
+  <p>
+    Re-ranking the entire pool with the points model makes it worse. Fit across roughly a thousand
+    players and the win-band values go negative at the weak end — the model starts concluding that
+    beating a poor opponent should cost you, which is an artefact of the fit rather than anything
+    true about tennis. So the points model re-ranks the top 80 and the convergence graph keeps the
+    order below that, where it was better anyway. Every player in the ITA's top 50 lands inside my
+    top 84, so the band is wide enough to catch what it needs to.
+  </p>
+  <p>
+    Two models with a seam in the middle is uglier than one model. It's also what the data supported,
+    and I'd rather ship the honest hybrid than a single elegant model that's worse.
+  </p>
+
+  <h2>What it bought</h2>
+
+  <div class="scroll">
+    <table>
+      <caption>
+        Average rank deviation from the official ITA list, top 25 / top 50, against two pinned
+        publications. Lower is closer.
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Pinned ITA list</th>
+          <th scope="col">Convergence graph alone</th>
+          <th scope="col">With the points model</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">20 May 2026</th><td class="num">2.80 / 4.96</td><td class="num">2.56 / 3.90</td></tr>
+        <tr><th scope="row">30 April 2026</th><td class="num">3.20 / 5.48</td><td class="num">2.80 / 4.48</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    The top-50 figure is where the work paid off: roughly a place better through the top 25, and a
+    full place or more through the top 50.
+  </p>
+
+  <h2>Why the site shows a live comparison instead of a number</h2>
+
+  <p>
+    I could put "within 2.6 places of the official ranking" on the homepage. I decided not to, because
+    it isn't stable. The ITA re-converges its whole list on every publish, so my deviation wobbles
+    week to week through no change of mine. A fixed accuracy claim would be true on the day I measured
+    it and quietly wrong afterwards.
+  </p>
+  <p>
+    So the site publishes a live panel comparing my current list to the current official one. It's a
+    worse marketing decision and a better one for anyone deciding whether to trust the thing. It also
+    means that when I'm wrong, I'm wrong in public, which has been a useful discipline.
+  </p>
+
+  <h2>The part I haven't solved</h2>
+
+  <p>
+    The residual error is loss-driven. Players with clean records rank a touch low; players carrying
+    many losses rank a touch high. The obvious candidate is a steeper, convex loss term — and every
+    version I've tried overfits. The top-25 sample is about 124 rows, which is small enough that
+    tuning a loss curve against it mostly learns those particular rows. Weighting losses by opponent
+    strength helps the top 50 and hurts the top 25.
+  </p>
+  <p>
+    It's an open lever rather than a defect, and I'd rather write that down than let it sit as an
+    unexplained wobble in the comparison panel.
+  </p>
+
+  <div class="note">
+    <p>
+      The fitted coefficients aren't published. The structure above is the whole idea; the numbers
+      are calibration and they change. StackedRoster's public
+      <a href="https://stackedroster.net/methodology">methodology page</a> carries the version written
+      for readers who want the ranking explained rather than the engineering.
+    </p>
+  </div>
+
+  <p class="more"><a href="stackedroster.html">&larr; Back to the StackedRoster write-up</a></p>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="stackedroster.html">StackedRoster</a></li>
+      <li><a href="booknooklane.html">Book Nook Lane</a></li>
+      <li><a href="mailto:cliviod@wofford.edu">cliviod@wofford.edu</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>

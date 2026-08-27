@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StackedRoster — Daniel Clivio</title>
+<meta name="description" content="How StackedRoster is built: an independent NCAA Division I college tennis ranking system, the decisions behind it, and what I would change.">
+<link rel="canonical" href="https://danielclivio05.github.io/stackedroster.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="StackedRoster — how it's built">
+<meta property="og:description" content="An independent NCAA Division I college tennis ranking system: the architecture, three decisions I'd defend, and what I'd change.">
+<meta property="og:url" content="https://danielclivio05.github.io/stackedroster.html">
+<meta property="og:image" content="https://danielclivio05.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wide">
+    <a class="name" href="/">Daniel Clivio</a>
+    <nav aria-label="Primary">
+      <a href="/#projects">Projects</a>
+      <a href="calibration.html">Writing</a>
+      <a href="https://github.com/DanielClivio05">GitHub</a>
+      <a href="https://www.linkedin.com/in/daniel-clivio">LinkedIn</a>
+      <a href="assets/Daniel-Clivio-Resume.pdf">Résumé</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <p class="eyebrow">Project</p>
+  <h1>StackedRoster</h1>
+  <p class="lede" style="margin-top:0.9rem">
+    An independent ranking system for NCAA Division I college tennis, live at
+    <a href="https://stackedroster.net">stackedroster.net</a>.
+  </p>
+
+  <p>
+    College tennis has an official ranking, published weekly by the ITA. It's the thing everybody
+    quotes and almost nobody can explain. I wanted to know whether I could reconstruct something
+    that behaved like it from the match results alone — and then, because the honest version of that
+    experiment is a public one, publish my list beside theirs and let people see the gaps.
+  </p>
+  <p>
+    It covers men's and women's Division I, updates between the ITA's weekly posts, and ranks past
+    their published top 125. I built it and I run it; there's nobody else on it.
+  </p>
+
+  <h2>How it's put together</h2>
+
+  <figure class="bleed">
+    <div class="diagram-scroll">
+      <svg viewBox="0 0 760 470" role="img" aria-labelledby="arch-title arch-desc">
+        <title id="arch-title">StackedRoster architecture</title>
+        <desc id="arch-desc">Match data flows from the ITA mesh API through scheduled GitHub Actions
+        into Supabase Postgres. From there it feeds the ranking engine, which publishes to a Next.js
+        site on Vercel, and separately feeds a news agent whose drafts go to a human review queue.</desc>
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <g fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.85">
+          <rect x="280" y="20"  width="200" height="48" rx="5"/>
+          <rect x="250" y="112" width="260" height="48" rx="5"/>
+          <rect x="250" y="204" width="260" height="48" rx="5"/>
+          <rect x="20"  y="300" width="300" height="76" rx="5"/>
+          <rect x="440" y="300" width="300" height="76" rx="5"/>
+          <rect x="20"  y="412" width="300" height="48" rx="5"/>
+          <rect x="440" y="412" width="300" height="48" rx="5"/>
+        </g>
+        <g fill="none" stroke="currentColor" stroke-width="1.25" marker-end="url(#ar)" opacity="0.75">
+          <path d="M380,68 V106"/>
+          <path d="M380,160 V198"/>
+          <path d="M380,252 V276 H170 V294"/>
+          <path d="M380,252 V276 H590 V294"/>
+          <path d="M170,376 V406"/>
+          <path d="M590,376 V406"/>
+        </g>
+        <g fill="currentColor" font-size="13" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+          <text x="380" y="49">ITA mesh API</text>
+          <text x="380" y="134">Scheduled GitHub Actions</text>
+          <text x="380" y="149" font-size="11.5" opacity="0.72">rosters, singles, doubles, tournaments</text>
+          <text x="380" y="226">Supabase / Postgres</text>
+          <text x="380" y="241" font-size="11.5" opacity="0.72">13 numbered migrations</text>
+          <text x="170" y="327">Ranking engine</text>
+          <text x="170" y="345" font-size="11.5" opacity="0.72">stage 1 — convergence graph</text>
+          <text x="170" y="361" font-size="11.5" opacity="0.72">stage 2 — points-table re-rank</text>
+          <text x="590" y="327">News agent</text>
+          <text x="590" y="345" font-size="11.5" opacity="0.72">drafts from ranking movements</text>
+          <text x="590" y="361" font-size="11.5" opacity="0.72">via the Anthropic API</text>
+          <text x="170" y="435">Next.js on Vercel</text>
+          <text x="170" y="450" font-size="11.5" opacity="0.72">stackedroster.net</text>
+          <text x="590" y="435">/admin review queue</text>
+          <text x="590" y="450" font-size="11.5" opacity="0.72">a person approves every article</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      Ingestion and the ranking refresh both run as scheduled GitHub Actions rather than on request,
+      so a slow ITA response never becomes a slow page. The two branches out of Postgres are
+      deliberately separate: the ranking engine writes ranks, the news agent only reads them.
+    </figcaption>
+  </figure>
+
+  <p>
+    The ranking itself runs in two stages. The first is a PageRank-style convergence graph over every
+    match result — your score comes from your ten best wins, divided by a calibrated base plus your
+    losses, where the value of a win is the opponent's score from the previous iteration. It's
+    circular by construction, so it's iterated until nothing moves more than 0.001. The second stage
+    re-ranks the top band using a points table fitted against the ITA's own published points.
+  </p>
+  <p class="more">
+    <a href="calibration.html">Why there are two stages, and how I calibrated the second one &rarr;</a>
+  </p>
+
+  <h2>Three decisions I'd defend</h2>
+
+  <h3>It is not the ITA ranking, and it says so everywhere</h3>
+  <p>
+    The easiest way to make an independent ranking look authoritative is to be vague about what it
+    is. I went the other way: the site states plainly that this is StackedRoster's own list, links
+    out to the official ITA rankings as the authority, publishes a plain-language methodology page,
+    and shows a live panel comparing my list to theirs. Publishing my own error is the part that
+    makes the rest of it worth reading.
+  </p>
+
+  <h3>Nothing publishes itself</h3>
+  <p>
+    The news agent drafts short articles from week-to-week ranking movements using the Anthropic API.
+    Every draft lands in a review queue in <code>/admin</code> and waits for a person. No article
+    auto-publishes, and no automated process is allowed to mutate a roster. A ranking system that
+    generates its own coverage of itself is exactly where an unattended model does damage, and the
+    cost of a human gate here is a few minutes a week.
+  </p>
+
+  <h3>These are real people, most of them young</h3>
+  <p>
+    The whole system is built on named, identifiable athletes, many of them teenagers, who never
+    asked to be ranked by me. I took an explicit position on that rather than leaving it implicit:
+    only competition results, a documented correction route, and a documented way to be removed.
+    It's the constraint I thought hardest about and the one that shaped what the product does not do.
+  </p>
+
+  <h2>What I'd do differently</h2>
+  <p>
+    <strong>The ranking tables should render on the server.</strong> Right now they're fetched from
+    Supabase in the browser, so the HTML a crawler receives says <code>Loading…</code> where the
+    ranking should be. That costs me search visibility, hurts anyone on a slow connection, and it's
+    the first thing I'd change — the data is public and static between refreshes, which is precisely
+    the case server rendering exists for.
+  </p>
+  <p>
+    <strong>The calibration constants live in environment variables.</strong> That made tuning fast
+    while I was fitting the model, and it means a published list can't be fully reconstructed from
+    the repository alone — you'd also need to know what the environment held that day. Versioned
+    config rows in the database, stamped onto each published list, would have been the better call
+    and I'd make it now.
+  </p>
+  <p>
+    <strong>The residual error is loss-driven and I haven't solved it.</strong> Players with clean
+    records rank slightly low and players with many losses rank slightly high. The obvious fix is a
+    steeper loss term, but every attempt overfits a top-25 sample of about 124 rows, and the version
+    that helps the top 50 makes the top 25 worse. I'd rather say that plainly than quote an accuracy
+    number and hope nobody checks.
+  </p>
+
+  <h2>Scale</h2>
+  <div class="scroll">
+    <table>
+      <caption>As of the last commit, 23 August 2026.</caption>
+      <tbody>
+        <tr><th scope="row">TypeScript / TSX</th><td class="num">~16,300 lines across 167 tracked files</td></tr>
+        <tr><th scope="row">Commits</th><td class="num">101</td></tr>
+        <tr><th scope="row">Route pages</th><td class="num">19</td></tr>
+        <tr><th scope="row">Modules in <code>src/lib</code></th><td class="num">23</td></tr>
+        <tr><th scope="row">Database migrations</th><td class="num">13, numbered</td></tr>
+        <tr><th scope="row">Contributors</th><td class="num">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <p>
+      The repository is private, so this page and the live site are the whole of what I can show.
+      I'm happy to walk through the code in an interview.
+    </p>
+  </div>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="booknooklane.html">Book Nook Lane</a></li>
+      <li><a href="mailto:cliviod@wofford.edu">cliviod@wofford.edu</a></li>
+      <li><a href="https://github.com/DanielClivio05">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/daniel-clivio">LinkedIn</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>

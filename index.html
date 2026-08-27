@@ -1,149 +1,170 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Personal homepage of Daniel Clivio — Computer Science & Economics student, Division I tennis player, and TerrierVision technical director.">
-  <title>Daniel Clivio</title>
-  <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daniel Clivio</title>
+<meta name="description" content="Computer science student at Wofford College. I build and run StackedRoster, an independent NCAA college tennis ranking system, and Book Nook Lane, the operations platform for an independent bookstore.">
+<link rel="canonical" href="https://danielclivio05.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Daniel Clivio">
+<meta property="og:description" content="Computer science student at Wofford College. I build and run StackedRoster, an independent NCAA college tennis ranking system, and Book Nook Lane, the operations platform for an independent bookstore.">
+<meta property="og:url" content="https://danielclivio05.github.io/">
+<meta property="og:image" content="https://danielclivio05.github.io/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Daniel Clivio — computer science, Wofford College">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wide">
+    <a class="name" href="/">Daniel Clivio</a>
     <nav aria-label="Primary">
-      <button
-        type="button"
-        class="nav-toggle"
-        aria-expanded="false"
-        aria-controls="nav-menu"
-        aria-label="Open menu"
-      >
-        <span class="nav-toggle-icon" aria-hidden="true"></span>
-      </button>
-      <ul id="nav-menu" class="nav-menu">
-        <li><a href="#hero">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#experience">Experience</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
+      <a href="#projects">Projects</a>
+      <a href="calibration.html">Writing</a>
+      <a href="https://github.com/DanielClivio05">GitHub</a>
+      <a href="https://www.linkedin.com/in/daniel-clivio">LinkedIn</a>
+      <a href="assets/Daniel-Clivio-Resume.pdf">Résumé</a>
     </nav>
-  </header>
+  </div>
+</header>
 
-  <main>
-    <!-- Hero section: name and one-line introduction -->
-    <section id="hero">
+<main id="main" class="wrap">
+
+  <section class="intro">
+    <img class="portrait" src="assets/daniel.jpg" alt="Daniel Clivio" width="132" height="132">
+    <div class="text">
       <h1>Daniel Clivio</h1>
-      <p>Computer Science &amp; Economics student building toward AI Trainer and software engineering roles.</p>
-    </section>
-
-    <!-- About section: short bio and background -->
-    <section id="about">
-      <h2>About</h2>
-      <p>
-        I am a Computer Science &amp; Economics student at Wofford College, graduating in May 2027.
-        I compete on the Division I tennis team, work as Technical Director &amp; Camera Operator for
-        TerrierVision on ESPN+, and am fluent in English and Italian. I am focused on opportunities
-        in AI engineering and computer science.
+      <p class="lede" style="margin-top:0.8rem">
+        The work I like best starts with a question that doesn't have a settled answer — how do you
+        rank a thousand tennis players when no two have played the same schedule? — and ends with
+        something running on a server that anyone can check.
       </p>
-    </section>
+      <p>
+        I'm in my final year at Wofford College in South Carolina, studying computer science with a
+        data science emphasis and a minor in economics. I play on the varsity tennis team, which is
+        where most of my week goes. Both projects below I built and still run on my own; between
+        them I've learned more about where my own judgment is shaky than any course has taught me.
+      </p>
+    </div>
+  </section>
 
-    <!-- Skills section: technical and analytical strengths -->
-    <section id="skills">
-      <h2>Skills</h2>
-      <ul>
-        <li>Python</li>
-        <li>C++</li>
-        <li>Data Science</li>
-        <li>NLP</li>
-        <li>AI Agents</li>
-        <li>Problem Solving</li>
-      </ul>
-    </section>
+  <section class="facts" aria-label="Availability">
+    <dl>
+      <dt>Graduating</dt><dd>May 2027</dd>
+      <dt>Available</dt><dd>Full-time from June 2027</dd>
+      <dt>Based</dt><dd>Spartanburg, South Carolina</dd>
+      <dt>Work authorisation</dt>
+      <dd>F-1. 36 months in the US with no sponsorship required — 12 months of OPT plus the 24-month STEM extension.</dd>
+    </dl>
+  </section>
 
-    <!-- Experience section: roles and organizations -->
-    <section id="experience">
-      <h2>Experience</h2>
+  <section id="projects">
+    <h2 class="eyebrow">Projects</h2>
 
-      <article>
-        <header>
-          <h3>TerrierVision</h3>
-          <p>
-            <time datetime="2024-08">August 2024</time> – Present
-          </p>
-        </header>
-        <p><strong>Technical Director &amp; Camera Operator</strong></p>
-        <p>Lead technical production and camera operations for Wofford athletics broadcasts on ESPN+.</p>
-      </article>
-
-      <article>
-        <header>
-          <h3>Wofford College Tennis</h3>
-          <p>
-            <time datetime="2023-08">August 2023</time> – Present
-          </p>
-        </header>
-        <p><strong>Division I Student-Athlete</strong></p>
-        <p>Compete at the NCAA Division I level while pursuing a dual degree in Computer Science and Economics.</p>
-      </article>
-    </section>
-
-    <!-- Projects section: featured work on the homepage -->
-    <section id="projects">
-      <h2>Projects</h2>
-      <div class="projects-grid">
-        <article class="project-card">
-          <h3>Personal Homepage</h3>
-          <p>This site — built with HTML, CSS, and vanilla JS</p>
-          <p class="project-tag">HTML · CSS · JS</p>
-          <p>
-            <a href="https://github.com/DanielClivio05" rel="noopener noreferrer">GitHub</a>
-          </p>
-        </article>
-        <article class="project-card">
-          <h3>Coming Soon</h3>
-          <p>Next project in progress</p>
-          <p class="project-tag">Python</p>
-          <p><span class="project-link-disabled">GitHub</span></p>
-        </article>
-        <article class="project-card">
-          <h3>Coming Soon</h3>
-          <p>Next project in progress</p>
-          <p class="project-tag">TBD</p>
-          <p><span class="project-link-disabled">GitHub</span></p>
-        </article>
+    <article class="project">
+      <div class="head">
+        <h3>StackedRoster</h3>
+        <span class="url"><a href="https://stackedroster.net">stackedroster.net</a></span>
       </div>
-    </section>
+      <p>
+        An independent ranking system for NCAA Division I college tennis, men's and women's. It pulls
+        match results from the ITA's API, computes its own ranking from them, and publishes the list
+        next to a live comparison against the official one — so anyone can see exactly where the two
+        disagree, including when mine is wrong.
+      </p>
+      <p class="meta">Next.js · TypeScript · Supabase / Postgres · Vercel · scheduled GitHub Actions — around 16,000 lines, sole developer</p>
+      <p class="more"><a href="stackedroster.html">How it works, and what I'd change &rarr;</a></p>
+    </article>
 
-    <!-- Contact section: email, profiles, and résumé -->
-    <section id="contact">
-      <h2>Contact</h2>
-      <address>
-        <p>
-          Email:
-          <a href="mailto:cliviod@wofford.edu">cliviod@wofford.edu</a>
-        </p>
-        <ul>
-          <li>
-            <a href="https://github.com/DanielClivio05" rel="noopener noreferrer">GitHub</a>
-          </li>
-          <li>
-            <a href="https://www.linkedin.com/in/daniel-clivio-2152b32a2/" rel="noopener noreferrer">LinkedIn</a>
-          </li>
-          <li>
-            <a href="resume.pdf" type="application/pdf">Résumé (PDF)</a>
-          </li>
-        </ul>
-      </address>
-    </section>
-  </main>
+    <article class="project">
+      <div class="head">
+        <h3>Book Nook Lane</h3>
+        <span class="url"><a href="https://booknooklane.com">booknooklane.com</a></span>
+      </div>
+      <p>
+        The system an independent bookstore runs on: inventory, sales, events, customer bookings, and
+        a bilingual public site the owner edits herself without needing a developer. It's deployed and
+        waiting rather than busy — the shop hasn't opened yet — so the interesting part is the design
+        rather than the traffic.
+      </p>
+      <p class="meta">Vanilla JavaScript · Supabase / Postgres with row-level security · Deno edge function · Netlify · Python for print output</p>
+      <p class="more"><a href="booknooklane.html">How it works, and what I'd change &rarr;</a></p>
+    </article>
+  </section>
 
-  <button type="button" class="back-to-top" aria-label="Back to top" hidden>↑</button>
+  <!-- ============================================================
+       RANKINGS SNAPSHOT — held back until the rows are real.
+       Delete this comment wrapper (this line and the closing one) to
+       switch the section on. Fill the five rows first; publishing
+       em-dashes looks worse than not having the section at all.
+       ============================================================
+  <! - - ============================================================
+       RANKINGS SNAPSHOT
+       Hand-maintained on purpose: no fetch, no JSON, nothing that can
+       fail in front of a visitor. Replace the five rows below and update
+       the caption when the 2026-27 season starts in January.
+       ============================================================ - - >
+  <section aria-labelledby="snapshot-h">
+    <h2 class="eyebrow" id="snapshot-h">A sample of the output</h2>
+    <div class="scroll">
+      <table>
+        <caption>
+          Top five, men's singles — final 2025-26 Division I standings as computed by StackedRoster,
+          published 18 June 2026. Not a live table: the 2026-27 rankings begin when dual matches
+          resume in January. The <a href="https://stackedroster.net/rankings/individual">full list of 100</a>
+          and the <a href="https://stackedroster.net/methodology">methodology</a> are public.
+        </caption>
+        <thead>
+          <tr><th scope="col">#</th><th scope="col">Player</th><th scope="col">School</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">1</td><td>—</td><td>—</td></tr>
+          <tr><td class="num">2</td><td>—</td><td>—</td></tr>
+          <tr><td class="num">3</td><td>—</td><td>—</td></tr>
+          <tr><td class="num">4</td><td>—</td><td>—</td></tr>
+          <tr><td class="num">5</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  -->
 
-  <footer>
-    <p><small>&copy; 2026 Daniel Clivio</small></p>
-  </footer>
-  <script src="script.js" defer></script>
+  <section class="tech">
+    <h2 class="eyebrow">Tools</h2>
+    <dl>
+      <dt>Build with</dt>
+      <dd>TypeScript · JavaScript · Python · SQL (Postgres)</dd>
+      <dt>Run on</dt>
+      <dd>Next.js · React · Supabase · Vercel · Netlify · Deno · GitHub Actions</dd>
+      <dt>From coursework</dt>
+      <dd>C++ · R · Standard ML · Racket</dd>
+      <dt>This term</dt>
+      <dd>High Performance Computing · Software Engineering · Econometrics</dd>
+      <dt>In progress</dt>
+      <dd>AWS Cloud Practitioner — exam booked for September 2026</dd>
+      <dt>Languages</dt>
+      <dd>English and Italian fluently; some Spanish and French</dd>
+    </dl>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <ul>
+      <li><a href="mailto:cliviod@wofford.edu">cliviod@wofford.edu</a></li>
+      <li><a href="https://github.com/DanielClivio05">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/daniel-clivio">LinkedIn</a></li>
+      <li><a href="assets/Daniel-Clivio-Resume.pdf">Résumé (PDF)</a></li>
+    </ul>
+    <p class="updated">Built without a framework, a build step, or any JavaScript. Last updated August 2026.</p>
+  </div>
+</footer>
+
 </body>
 </html>

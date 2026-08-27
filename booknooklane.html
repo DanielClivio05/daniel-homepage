@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Nook Lane — Daniel Clivio</title>
+<meta name="description" content="How Book Nook Lane is built: the operations platform for an independent bookstore, the security design behind it, and what I would change.">
+<link rel="canonical" href="https://danielclivio05.github.io/booknooklane.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Book Nook Lane — how it's built">
+<meta property="og:description" content="The operations platform an independent bookstore runs on: the security design, three decisions I'd defend, and what I'd change.">
+<meta property="og:url" content="https://danielclivio05.github.io/booknooklane.html">
+<meta property="og:image" content="https://danielclivio05.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wide">
+    <a class="name" href="/">Daniel Clivio</a>
+    <nav aria-label="Primary">
+      <a href="/#projects">Projects</a>
+      <a href="calibration.html">Writing</a>
+      <a href="https://github.com/DanielClivio05">GitHub</a>
+      <a href="https://www.linkedin.com/in/daniel-clivio">LinkedIn</a>
+      <a href="assets/Daniel-Clivio-Resume.pdf">Résumé</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <p class="eyebrow">Project</p>
+  <h1>Book Nook Lane</h1>
+  <p class="lede" style="margin-top:0.9rem">
+    The system an independent bookstore runs on, live at
+    <a href="https://booknooklane.com">booknooklane.com</a>.
+  </p>
+
+  <p>
+    Inventory, sales, events, customer bookings, a shared photo library, and a bilingual public site
+    in English and Italian — all of it operated by one person who is not technical and should never
+    have to call me to change a sentence on the homepage.
+  </p>
+  <p>
+    The shop hasn't opened yet, so the tables are nearly empty. It's deployed and waiting rather than
+    busy, which means the interesting part of this project is the design rather than the traffic.
+  </p>
+
+  <h2>How it's put together</h2>
+
+  <figure class="bleed">
+    <div class="diagram-scroll">
+      <svg viewBox="0 0 760 480" role="img" aria-labelledby="bnl-title bnl-desc">
+        <title id="bnl-title">Book Nook Lane architecture</title>
+        <desc id="bnl-desc">Public visitors reach a static Netlify site that can only read published
+        events and content. Bookings are written through a single SECURITY DEFINER Postgres function.
+        The owner signs in to an admin area with full access. A database webhook triggers a Deno edge
+        function that emails the shop through Resend.</desc>
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <g fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.85">
+          <rect x="20"  y="20"  width="210" height="44" rx="5"/>
+          <rect x="20"  y="100" width="210" height="56" rx="5"/>
+          <rect x="20"  y="196" width="210" height="76" rx="5"/>
+          <rect x="275" y="196" width="210" height="76" rx="5"/>
+          <rect x="530" y="20"  width="210" height="44" rx="5"/>
+          <rect x="530" y="100" width="210" height="56" rx="5"/>
+          <rect x="275" y="316" width="210" height="64" rx="5"/>
+          <rect x="275" y="412" width="210" height="52" rx="5"/>
+        </g>
+        <g fill="none" stroke="currentColor" stroke-width="1.25" marker-end="url(#ar2)" opacity="0.75">
+          <path d="M125,64 V96"/>
+          <path d="M125,156 V192"/>
+          <path d="M230,234 H271"/>
+          <path d="M230,128 H350 V192"/>
+          <path d="M635,64 V96"/>
+          <path d="M530,128 H410 V192"/>
+          <path d="M380,272 V312"/>
+          <path d="M380,380 V408"/>
+        </g>
+        <g fill="currentColor" font-size="13" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+          <text x="125" y="47">Public visitor</text>
+          <text x="125" y="124">Static site on Netlify</text>
+          <text x="125" y="140" font-size="11.5" opacity="0.72">vanilla JS, ES modules</text>
+          <text x="125" y="222">book_sessions()</text>
+          <text x="125" y="240" font-size="11.5" opacity="0.72">SECURITY DEFINER</text>
+          <text x="125" y="256" font-size="11.5" opacity="0.72">honeypot field</text>
+          <text x="380" y="222">Supabase / Postgres</text>
+          <text x="380" y="240" font-size="11.5" opacity="0.72">7 tables</text>
+          <text x="380" y="256" font-size="11.5" opacity="0.72">row-level security on every one</text>
+          <text x="635" y="47">Shop owner</text>
+          <text x="635" y="124">Admin</text>
+          <text x="635" y="140" font-size="11.5" opacity="0.72">exactly one auth user</text>
+          <text x="380" y="342">Database webhook</text>
+          <text x="380" y="360" font-size="11.5" opacity="0.72">Deno edge function</text>
+          <text x="380" y="434">Resend &rarr; shop inbox</text>
+          <text x="380" y="450" font-size="11.5" opacity="0.72">fails open</text>
+        </g>
+        <g fill="currentColor" font-size="11" opacity="0.6" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+          <text x="240" y="122">reads published events and content only</text>
+          <text x="137" y="180">booking</text>
+          <text x="520" y="122" text-anchor="end">full access</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>
+      The public site holds no write access to any customer table. Everything a visitor can do
+      passes through one Postgres function, which is the only surface that needs auditing.
+    </figcaption>
+  </figure>
+
+  <h2>Three decisions I'd defend</h2>
+
+  <h3>The public site can't write to anything</h3>
+  <p>
+    Row-level security is on for all seven tables. An anonymous visitor can read published events and
+    published site content, and nothing else. Bookings don't get an insert policy — they go through a
+    single <code>SECURITY DEFINER</code> function that carries a honeypot field, so the browser never
+    holds a credential that can touch customer data. That collapses the attack surface to one
+    function I can actually read in full and reason about.
+  </p>
+
+  <h3>The booking email fails open</h3>
+  <p>
+    When a booking lands, a Postgres webhook fires a Deno edge function that emails the shop through
+    Resend. If Resend is down, the function fails without rolling anything back — the booking is
+    already committed. Losing a notification is an annoyance; losing a customer's booking because a
+    third-party email provider had a bad afternoon is not acceptable, and the two failure modes
+    shouldn't be coupled.
+  </p>
+
+  <h3>The owner doesn't need me</h3>
+  <p>
+    The public site is bilingual in English and Italian, the photo library is shared, and site copy
+    goes through a plain-language editor rather than a CMS with a learning curve. This was the actual
+    requirement: a system whose usefulness doesn't decay the moment the person who built it is busy
+    with finals.
+  </p>
+
+  <h2>What I'd do differently</h2>
+  <p>
+    <strong>I don't yet know which of my assumptions are wrong.</strong> Nothing here has met a real
+    week of trading. I designed the schema around how I imagined the shop would work, and some of
+    that will turn out to be wrong in ways no amount of thinking finds ahead of time. I'd rather say
+    that than describe it as battle-tested.
+  </p>
+  <p>
+    <strong>The design assumes exactly one operator.</strong> There is one auth user and no concept
+    of roles, a second staff member, or a second location. That was the right scope for the shop, and
+    it's the kind of decision that's cheap now and expensive in two years, so I'd at least have left
+    room for a users table.
+  </p>
+  <p>
+    <strong>The print assets live outside the application.</strong> The A4 QR posters and the
+    opening-hours signage are generated by a Python script using ReportLab, run separately from the
+    app. It works, but it means changing the opening hours in the admin doesn't change the sign on
+    the door — two sources of truth for the same fact, which is the sort of thing that quietly goes
+    stale.
+  </p>
+
+  <h2>Scale</h2>
+  <div class="scroll">
+    <table>
+      <tbody>
+        <tr><th scope="row">JavaScript, SQL and Python</th><td class="num">~3,500 lines</td></tr>
+        <tr><th scope="row">Commits</th><td class="num">30</td></tr>
+        <tr><th scope="row">Database tables</th><td class="num">7, row-level security on all</td></tr>
+        <tr><th scope="row">Contributors</th><td class="num">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="stackedroster.html">StackedRoster</a></li>
+      <li><a href="mailto:cliviod@wofford.edu">cliviod@wofford.edu</a></li>
+      <li><a href="https://github.com/DanielClivio05">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/daniel-clivio">LinkedIn</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>
